@@ -55,13 +55,18 @@
                     <li>
                         <a href="#">About</a>
                     </li>
-                    <li>
-                        {% if user.is_authenticated %}
+                    {% if user.is_authenticated %}
+                        <li>
+                            <a href="{% url 'users:home' %}">Account</a>
+                        </li>
+                        <li>
                             <a href="{% url 'logout' %}">Logout</a>
-                        {% else %}
+                        </li>
+                    {% else %}
+                        <li>
                             <a href="{% url 'login' %}">Login</a>
-                        {% endif %}
-                    </li>
+                        </li>
+                    {% endif %}
                 </ul>
             </div>
             {% endblock %}

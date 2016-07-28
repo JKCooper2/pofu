@@ -125,6 +125,6 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static")
 ]
 
-LOGIN_URL = 'pofu_login'
-LOGOUT_URL = 'pofu_logout'
-LOGIN_REDIRECT_URL = 'main:index'
+LOGIN_URL = 'login'
+LOGOUT_URL = 'logout'
+LOGIN_REDIRECT_URL = 'users:home'
