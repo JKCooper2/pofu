@@ -13,27 +13,17 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.conf.urls import url, include, patterns
+from django.conf.urls import url, include
 from django.contrib import admin
+from django.contrib.auth.views import login, logout
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 admin.autodiscover()
 
-urlpatterns = patterns(
-    '',
+urlpatterns = [
     url(r'^', include('main.urls')),
     url(r'^users/', include('users.urls')),
-    url(r'^admin/', admin.site.urls)
-)
-
-urlpatterns += patterns(
-    'django.contrib.auth.views',
-
-    url(r'^login/$', 'login',
-        {'template_name': 'login.html'},
-        name='login'),
-
-    url(r'^logout/$', 'logout',
-        {'next_page': 'main:index'},
-        name='logout'),
-)
-
+    url(r'^admin/', admin.site.urls),
+    url(r'^login/$', login, {'template_name': 'login.html'}, name='login'),
+    url(r'^logout/$', logout, {'next_page': 'main:index'}, name='logout'),
+] + staticfiles_urlpatterns()

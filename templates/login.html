@@ -1,16 +1,13 @@
-<html>
-    <head>
-        <title>Please login</title>
-    </head>
+{% extends 'base.html' %}
 
-    <body>
-        Please login:
+{% block content %}
 
-        <form role="form" method="post" action="{% url 'login' %}">
-            {% csrf_token %}
-            {{ form }}
-            <input class="btn btn-primary" type="submit" value="Login" />
-            <input type="hidden" name="next" value="{{ next }}" />
-        </form>
-    </body>
-</html>
+    Please login:
+
+    <form role="form" method="post" action="{% url 'login' %}">
+        {% csrf_token %}
+        {{ form }}
+        <input class="btn btn-primary" type="submit" value="Login" />
+        <input type="hidden" name="next" value="{{ next }}" />
+    </form>
+{% endblock content %}
