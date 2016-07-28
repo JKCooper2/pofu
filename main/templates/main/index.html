@@ -1,1 +1,7 @@
 <h1>WELCOME TO POFU</h1>
+
+{% if user.is_authenticated %}
+    <p>Hi, {{user.username }}</p>
+{% else %}
+    <p>Hi unknown person</p>
+{% endif %}
