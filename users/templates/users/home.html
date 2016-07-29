@@ -10,6 +10,20 @@
     <div class="well col-md-6">
         {% include "game/game_list_snippet.html" with header="Games" game_list=my_games %}
     </div>
+    <div class="well col-md-4 col-md-push-1">
+        {% if invitations %}
+            <h3 class="panel-header">Open invitations</h3>
+            <div class="list-group">
+                {% for inv in invitations %}
+                    <a class="list-group-item" href="{% url 'game:view_invite' pk=inv.id %}">
+                        {{ inv.from_user.username }} has invited you to a game. Click here
+                    </a>
+                {% endfor %}
+            </div>
+        {% else %}
+            <h3 class="panel-header">No active invitations</h3>
+        {% endif %}
+    </div>
 </div>
 
 {% endblock content %}

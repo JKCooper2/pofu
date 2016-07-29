@@ -22,6 +22,7 @@ admin.autodiscover()
 
 urlpatterns = [
     url(r'^', include('main.urls')),
+    url(r'^game/', include('game.urls')),
     url(r'^users/', include('users.urls')),
     url(r'^admin/', admin.site.urls),
     url(r'^login/$', login, {'template_name': 'login.html'}, name='login'),

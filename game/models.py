@@ -24,3 +24,13 @@ class Player(models.Model):
 
     def __str__(self):
         return str(self.game) + " - " + self.user.username
+
+
+class Invitation(models.Model):
+    from_user = models.ForeignKey(User, related_name='invitations_sent')
+    to_user = models.ForeignKey(User, related_name='invitations_received',
+                                verbose_name="User to invite",
+                                help_text="Please select the user you want to play a game against")
+    message = models.CharField(max_length=300, blank=True,
+                               help_text="Adding a friendly message is never a bad idea")
+    timestamp = models.DateTimeField(auto_now_add=True)
