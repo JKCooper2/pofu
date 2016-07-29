@@ -1,0 +1,12 @@
+<h3 class="panel-header">{{ header }}</h3>
+
+<div class="list-group">
+    {% for game in game_list %}
+        <a class="list-group-item" href="#">
+            {{ game }}:
+            {{ game.get_status_display }}
+        </a>
+    {% empty %}
+        <span class="list-group-item">No games available</span>
+    {% endfor %}
+</div>

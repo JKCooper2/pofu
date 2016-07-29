@@ -1,5 +1,15 @@
 {% extends 'base.html' %}
 
 {% block content %}
-Welcome {{ user.username }}
+
+<div class="row">
+    <div class="col-md-12" id="header">
+        Welcome {{ user.username }}
+    </div>
+    
+    <div class="well col-md-6">
+        {% include "game/game_list_snippet.html" with header="Games" game_list=my_games %}
+    </div>
+</div>
+
 {% endblock content %}
