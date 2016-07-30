@@ -4,13 +4,19 @@
     <div class="well col-md-6">
         <p>Games currently available to join:</p>
         {% for game in games %}
-            <a class="list-group-item" href="#">
-                Host: {{ game.host }}<br>
-                created: {{ game.timestamp }} <br>
-                Players: {{ game.joined }}/{{ game.num_players }}<br>
-                Message: {{ game.message }}
-
-            </a>
+            <div class="col-md-12">
+                <div class="col-md-9">
+                    <a class="list-group-item" href="#">
+                        Host: {{ game.host }} <br>
+                        Created: {{ game.timestamp }}<br>
+                        Players: {{ game.joined }}/{{ game.num_players }}<br>
+                        Message: {{ game.message }}
+                    </a>
+                </div>
+                <div class="col-md-3">
+                    <a href="{% url 'game:join_game' pk=game.id %}" class="btn btn-success" role="button">Join Game</a>
+                </div>
+            </div>
         {% empty %}
             <p>No games currently available</p>
         {% endfor %}
