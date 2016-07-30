@@ -44,6 +44,7 @@ class Game(models.Model):
 class Player(models.Model):
     game = models.ForeignKey(Game)
     user = models.ForeignKey(User)
+    points = models.IntegerField(default=0)
 
     def __str__(self):
         return str(self.game) + " - " + self.user.username

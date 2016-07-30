@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div id="header">
+        {{ game }}
+    </div>
+    <div id="table">
+        <div class="row">
+            <div id="other_player">
+                {% for other_player in other_players %}
+                    <div class="well col-sm-1">
+                        {{ other_player.user.username }} <br>
+                        Points: {{ other_player.points }}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="row">
+            <div id="player_section">
+                <div class="well col-md-12">
+                    {{ player.user.username }} <br>
+                    Points: {{ player.points }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+{% endblock content %}

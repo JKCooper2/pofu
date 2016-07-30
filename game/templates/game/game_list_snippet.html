@@ -2,9 +2,8 @@
 
 <div class="list-group">
     {% for game in game_list %}
-        <a class="list-group-item" href="#">
-            {{ game }}:
-            {{ game.get_status_display }}
+        <a class="list-group-item" href="{% url 'game:display' pk=game.id %}">
+            {{ game }}: {{ game.get_status_display }}
         </a>
     {% empty %}
         <span class="list-group-item">No games available</span>

@@ -3,7 +3,7 @@ from django.http import HttpResponseForbidden, HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 
-from .models import Setup, Invitation
+from .models import Setup, Invitation, Game
 from .forms import SetupGameForm
 
 
@@ -73,3 +73,17 @@ def leave_game(request, pk):
     invite.delete()
 
     return redirect('users:home')
+
+
+@login_required
+def display(request, pk):
+    game = get_object_or_404(Game, pk=pk)
+    all_players = game.player_set.all()
+
+    player = all_players.get(user=request.user)
+    other_players = all_players.exclude(user=request.user)
+
+    context = {'game': game,
+               'player': player,
+               'other_players': other_players}
+    return render(request, 'game/display.html', context)
