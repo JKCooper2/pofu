@@ -7,20 +7,28 @@
         Welcome {{ user.username }}
     </div>
     
-    <div class="well col-md-6">
+    <div class="well col-md-5">
         {% include "game/game_list_snippet.html" with header="Games" game_list=my_games %}
     </div>
-    <div class="well col-md-4 col-md-push-1">
+    <div class="well col-md-5 col-md-push-1">
         <div>
             <h3 class="panel-header">Hosting:</h3>
 
             <div class="list-group">
                 {% for game in hosting %}
-                    <a class="list-group-item" href="#">
-                        Created: {{ game.timestamp }}<br>
-                        Players: {{ game.joined }}/{{ game.num_players }}<br>
-                        Message: {{ game.message }}
-                    </a>
+                    <div class="col-md-12">
+                        <div class="col-md-9">
+                            <a class="list-group-item" href="#">
+                                Host: {{ game.host }} <br>
+                                Created: {{ game.timestamp }}<br>
+                                Players: {{ game.joined }}/{{ game.num_players }}<br>
+                                Message: {{ game.message }}
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{% url 'game:delete' pk=game.id %}" class="btn btn-danger" role="button">Delete</a>
+                        </div>
+                    </div>
                 {% empty %}
                     <span class="list-group-item">No games available</span>
                 {% endfor %}
