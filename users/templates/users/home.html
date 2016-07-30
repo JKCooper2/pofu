@@ -11,7 +11,35 @@
         {% include "game/game_list_snippet.html" with header="Games" game_list=my_games %}
     </div>
     <div class="well col-md-4 col-md-push-1">
-        <p>Games Joining</p>
+        <div>
+            <h3 class="panel-header">Hosting:</h3>
+
+            <div class="list-group">
+                {% for game in hosting %}
+                    <a class="list-group-item" href="#">
+                        Created: {{ game.timestamp }}<br>
+                        Players: {{ game.joined }}/{{ game.num_players }}<br>
+                        Message: {{ game.message }}
+                    </a>
+                {% empty %}
+                    <span class="list-group-item">No games available</span>
+                {% endfor %}
+            </div>
+            <h3 class="panel-header">Joining:</h3>
+
+            <div class="list-group">
+                {% for game in joining %}
+                    <a class="list-group-item" href="#">
+                        Host: {{ game.host }} <br>
+                        Created: {{ game.timestamp }}<br>
+                        Players: {{ game.joined }}/{{ game.num_players }}<br>
+                        Message: {{ game.message }}
+                    </a>
+                {% empty %}
+                    <span class="list-group-item">No games available</span>
+                {% endfor %}
+            </div>
+        </div>
     </div>
 </div>
 

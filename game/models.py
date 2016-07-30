@@ -28,6 +28,20 @@ class Game(models.Model):
         return "Game " + str(self.id)
 
 
+class Player(models.Model):
+    game = models.ForeignKey(Game)
+    user = models.ForeignKey(User)
+
+    def __str__(self):
+        return str(self.game) + " - " + self.user.username
+
+
+class SetupManager(models.Manager):
+    def setups_for_user(self, user):
+        return super(SetupManager, self).get_queryset().filter(
+            models.Q(invitation__user_id=user.id))
+
+
 class Setup(models.Model):
     num_players = models.IntegerField(verbose_name="Number of Players",
                                       help_text="2-8 players",
@@ -37,6 +51,8 @@ class Setup(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     message = models.CharField(max_length=300, blank=True)
 
+    objects = SetupManager()
+
     def joined(self):
         return self.invitation_set.count()
 
@@ -44,17 +60,9 @@ class Setup(models.Model):
         return "Setup " + str(self.id)
 
 
-class Player(models.Model):
-    game = models.ForeignKey(Game)
-    user = models.ForeignKey(User)
-
-    def __str__(self):
-        return str(self.game) + " - " + self.user.username
-
-
 class Invitation(models.Model):
     setup = models.ForeignKey(Setup, null=True)
-    to_user = models.ForeignKey(User, null=True)
+    user = models.ForeignKey(User, null=True)
 
     def __str__(self):
-        return str(self.setup) + ": " + self.to_user.username
+        return str(self.setup) + ": " + self.user.username
