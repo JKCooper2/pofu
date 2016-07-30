@@ -8,6 +8,19 @@ class GamesManager(models.Manager):
         return super(GamesManager, self).get_queryset().filter(
             models.Q(player__user_id=user.id))
 
+    @staticmethod
+    def create_game(setup):
+        game = Game(host=setup.host)
+        game.save()
+
+        for invite in setup.invitation_set.all():
+            player = Player(game=game, user=invite.user)
+            player.save()
+
+        setup.delete()
+
+        return game
+
 
 GAME_STATUS = (
     ('A', 'Active'),
@@ -18,7 +31,7 @@ GAME_STATUS = (
 
 class Game(models.Model):
     status = models.CharField(max_length=1, default='A', choices=GAME_STATUS)
-    title = models.CharField(max_length=50)
+    title = models.CharField(max_length=50, blank=True)
 
     host = models.ForeignKey(User, null=True)
 
@@ -55,6 +68,12 @@ class Setup(models.Model):
 
     def joined(self):
         return self.invitation_set.count()
+
+    def complete(self):
+        return self.joined() == self.num_players
+
+    def create_game(self):
+        GamesManager.create_game(setup=self)
 
     def __str__(self):
         return "Setup " + str(self.id)

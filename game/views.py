@@ -1,5 +1,5 @@
 from django.shortcuts import redirect, render, get_object_or_404
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 
@@ -55,6 +55,9 @@ def join_game(request, pk):
     if request.user not in [inv.user for inv in setup.invitation_set.all()]:
         invite = Invitation(setup=setup, user=request.user)
         invite.save()
+
+    if setup.complete():
+        setup.create_game()
 
     return redirect('users:home')
 

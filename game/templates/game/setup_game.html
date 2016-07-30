@@ -3,11 +3,11 @@
 
 {% block content %}
     <div class="well col-md-6">
-        <p>Please select the user you want to invite to play a game:</p>
+        <p>Please select the game settings you would like:</p>
         <form action="" method="post">
             {% csrf_token %}
             {{ form|crispy }}
-            <button type="submit">Send the invitation</button>
+            <button type="submit">Setup Game</button>
         </form>
     </div>
 {% endblock content %}
