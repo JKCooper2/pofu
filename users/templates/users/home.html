@@ -19,7 +19,6 @@
                     <div class="col-md-12">
                         <div class="col-md-9">
                             <a class="list-group-item" href="#">
-                                Host: {{ game.host }} <br>
                                 Created: {{ game.timestamp }}<br>
                                 Players: {{ game.joined }}/{{ game.num_players }}<br>
                                 Message: {{ game.message }}
@@ -37,12 +36,19 @@
 
             <div class="list-group">
                 {% for game in joining %}
-                    <a class="list-group-item" href="#">
-                        Host: {{ game.host }} <br>
-                        Created: {{ game.timestamp }}<br>
-                        Players: {{ game.joined }}/{{ game.num_players }}<br>
-                        Message: {{ game.message }}
-                    </a>
+                    <div class="col-md-12">
+                        <div class="col-md-9">
+                            <a class="list-group-item" href="#">
+                                Host: {{ game.host }} <br>
+                                Created: {{ game.timestamp }}<br>
+                                Players: {{ game.joined }}/{{ game.num_players }}<br>
+                                Message: {{ game.message }}
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{% url 'game:leave' pk=game.id %}" class="btn btn-danger" role="button">Leave</a>
+                        </div>
+                    </div>
                 {% empty %}
                     <span class="list-group-item">No games available</span>
                 {% endfor %}

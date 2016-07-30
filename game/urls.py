@@ -8,4 +8,5 @@ urlpatterns = [
     url(r'^join$', views.join, name='join'),
     url(r'^join/(?P<pk>\d+)/$', views.join_game, name='join_game'),
     url(r'^delete/(?P<pk>\d+)/$', views.delete_game, name='delete'),
+    url(r'^leave/(?P<pk>\d+)/$', views.leave_game, name='leave'),
 ]

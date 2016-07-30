@@ -1,4 +1,5 @@
 from django.shortcuts import redirect, render, get_object_or_404
+from django.http import HttpResponseForbidden
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 
@@ -42,6 +43,7 @@ def delete_game(request, pk):
 @login_required
 def join(request):
     games = Setup.objects.all()
+    games = games.exclude(host=request.user)
     context = {'games': games}
     return render(request, 'game/join_game.html', context)
 
@@ -53,5 +55,18 @@ def join_game(request, pk):
     if request.user not in [inv.user for inv in setup.invitation_set.all()]:
         invite = Invitation(setup=setup, user=request.user)
         invite.save()
+
+    return redirect('users:home')
+
+
+@login_required
+def leave_game(request, pk):
+    setup = get_object_or_404(Setup, pk=pk)
+
+    if request.user == setup.host:
+        return HttpResponseForbidden("You can't remove yourself from a game you are hosting")
+
+    invite = setup.invitation_set.filter(user=request.user)
+    invite.delete()
 
     return redirect('users:home')
