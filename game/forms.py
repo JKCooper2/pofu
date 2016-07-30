@@ -1,8 +1,8 @@
 from django.forms import ModelForm
-from .models import Invitation
+from .models import Setup
 
 
-class InvitationForm(ModelForm):
+class SetupGameForm(ModelForm):
     class Meta:
-        model = Invitation
-        fields = ['to_user', 'message']
+        model = Setup
+        fields = ['num_players', 'message']

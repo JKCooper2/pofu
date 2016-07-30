@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="well col-md-6">
+        <p>Games currently available to join:</p>
+        {% for game in games %}
+            <a class="list-group-item" href="#">
+                Host: {{ game.host }}<br>
+                created: {{ game.timestamp }} <br>
+                Players: {{ game.joined }}/{{ game.num_players }}<br>
+                Message: {{ game.message }}
+
+            </a>
+        {% empty %}
+            <p>No games currently available</p>
+        {% endfor %}
+    </div>
+{% endblock content %}

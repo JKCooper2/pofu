@@ -1,46 +1,30 @@
-from django.shortcuts import redirect, render, get_object_or_404
+from django.shortcuts import redirect, render
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import PermissionDenied
-from django.http.response import HttpResponse
 
-from .models import Invitation, Game
-from .forms import InvitationForm
+from .models import Setup
+from .forms import SetupGameForm
 
 
 @login_required
-def new_invitation(request):
+def setup_game(request):
     if request.method == 'POST':
-        invitation = Invitation(from_user=request.user)
-        form = InvitationForm(data=request.POST, instance=invitation)
+        setup = Setup(host=request.user)
+        form = SetupGameForm(data=request.POST, instance=setup)
 
         if form.is_valid():
             form.save()
             return redirect('users:home')
 
     else:
-        form = InvitationForm()
+        form = SetupGameForm()
 
-    return render(request, 'game/new_invitation.html', {'form': form})
+    return render(request, 'game/setup_game.html', {'form': form})
 
 
 @login_required
-def accept_invitation(request, pk):
-    invitation = get_object_or_404(Invitation, pk=pk)
+def join_game(request):
+    games = Setup.objects.all()
 
-    if not request.user == invitation.to_user:
-        raise PermissionDenied
+    context = {'games': games}
 
-    if request.method == 'POST':
-        if 'accept' in request.POST:
-            # game = Game.objects.new_game(invitation)
-            # invitation.delete()
-            # return redirect(game.get_absolute_url())
-
-            invitation.delete()
-            return HttpResponse("Accepted Invitation")
-        else:
-            invitation.delete()
-            return redirect('users:home')
-
-    else:
-        return render(request, 'game/accept_invitation.html', {'invitation': invitation})
+    return render(request, 'game/join_game.html', context)

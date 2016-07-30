@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Game, Player
+from .models import Game, Player, Invitation, Setup
 
 
 class PlayerInline(admin.StackedInline):
@@ -12,3 +12,5 @@ class GameAdmin(admin.ModelAdmin):
     inlines = [PlayerInline]
 
 admin.site.register(Game, GameAdmin)
+admin.site.register(Invitation)
+admin.site.register(Setup)

@@ -4,6 +4,6 @@ from . import views
 
 app_name = "game"
 urlpatterns = [
-    url(r'^invite$', views.new_invitation, name='invite'),
-    url(r'^invitation/(?P<pk>\d+)/$', views.accept_invitation, name="view_invite")
+    url(r'^setup$', views.setup_game, name='setup'),
+    url(r'^join$', views.join_game, name='join'),
 ]

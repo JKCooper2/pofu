@@ -49,18 +49,15 @@
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
-                    <li>
-                        <a href="#">Games</a>
-                    </li>
-                    <li>
-                        <a href="#">About</a>
-                    </li>
                     {% if user.is_authenticated %}
                         <li>
                             <a href="{% url 'users:home' %}">Account</a>
                         </li>
                         <li>
-                            <a href="{% url 'game:invite' %}">Invite</a>
+                            <a href="{% url 'game:setup' %}">Setup Game</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'game:join' %}">Join Game</a>
                         </li>
                         <li>
                             <a href="{% url 'logout' %}">Logout</a>
