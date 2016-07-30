@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
 
+from cards.models import Deck
+
 
 class GamesManager(models.Manager):
     def games_for_user(self, user):
@@ -32,7 +34,7 @@ GAME_STATUS = (
 class Game(models.Model):
     status = models.CharField(max_length=1, default='A', choices=GAME_STATUS)
     title = models.CharField(max_length=50, blank=True)
-
+    deck = Deck()
     host = models.ForeignKey(User, null=True)
 
     objects = GamesManager()

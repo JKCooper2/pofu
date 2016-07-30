@@ -3,7 +3,8 @@
 {% block content %}
 <div class="row">
     <div id="header">
-        {{ game }}
+        {{ game }} <br>
+        Cards: {{ game.deck.cards.count }}
     </div>
     <div id="table">
         <div class="row">
