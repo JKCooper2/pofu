@@ -10,4 +10,5 @@ urlpatterns = [
     url(r'^delete/(?P<pk>\d+)/$', views.delete_game, name='delete'),
     url(r'^leave/(?P<pk>\d+)/$', views.leave_game, name='leave'),
     url(r'^display/(?P<pk>\d+)/$', views.display, name='display'),
+    url(r'^start/(?P<pk>\d+)/$', views.start, name='start'),
 ]

@@ -1,5 +1,5 @@
 from django.shortcuts import redirect, render, get_object_or_404
-from django.http import HttpResponseForbidden, HttpResponse
+from django.http import HttpResponseForbidden, HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 
@@ -87,3 +87,8 @@ def display(request, pk):
                'player': player,
                'other_players': other_players}
     return render(request, 'game/display.html', context)
+
+
+@login_required
+def start(request, pk):
+    return JsonResponse({'user': request.user.username},)
