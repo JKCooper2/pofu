@@ -1,6 +1,9 @@
 from django.db import models
+from django.template.loader import render_to_string
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
+
+import random
 
 from cards.models import Deck, Hand
 
@@ -15,8 +18,13 @@ class GamesManager(models.Manager):
         game = Game(host=setup.host)
         game.save()
 
-        for invite in setup.invitation_set.all():
-            player = Player(game=game, user=invite.user)
+        invites = setup.invitation_set.all()
+
+        shuffle_order = list(range(len(invites)))
+        random.shuffle(shuffle_order)
+
+        for i, invite in enumerate(invites):
+            player = Player(game=game, user=invite.user, position=shuffle_order[i])
             player.save()
 
         setup.delete()
@@ -36,22 +44,44 @@ class Game(models.Model):
     title = models.CharField(max_length=50, blank=True)
     host = models.ForeignKey(User)
     deck = Deck()
+    turn = models.IntegerField(default=0)
 
     objects = GamesManager()
 
     def __str__(self):
         return "Game " + str(self.id)
 
+    def start(self):
+        all_players = self.player_set.all()
+        self.deck.deal(all_players)
+
+        first = all_players.get(position=0)
+        first.turn = True
+        first.save()
+
+        player = all_players.get(user=self.host)
+        player_html = render_to_string('game/player_snippet.html', {'player': player})
+
+        other_players = all_players.exclude(user=self.host)
+        other_html = [(p.user.username, render_to_string('game/other_player_snippet.html', {'player': p})) for p in other_players]
+
+        return {'self': player_html,
+                'players': other_html}
+
 
 class Player(models.Model):
     game = models.ForeignKey('game.Game')
     user = models.ForeignKey(User)
     points = models.IntegerField(default=0)
+    position = models.IntegerField()
+    turn = models.BooleanField(default=False)
 
     def save(self, **kwargs):
         super(Player, self).save(**kwargs)
-        hand = Hand(player=self)
-        hand.save()
+
+        if not hasattr(self, 'hand'):
+            hand = Hand(player=self)
+            hand.save()
 
     def __str__(self):
         return str(self.game) + " - " + self.user.username

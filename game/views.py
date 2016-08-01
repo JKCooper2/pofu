@@ -1,6 +1,5 @@
 from django.shortcuts import redirect, render, get_object_or_404
 from django.http import HttpResponseForbidden, HttpResponse, JsonResponse
-from django.template.loader import render_to_string
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 
@@ -97,14 +96,6 @@ def start(request, pk):
     if game.host != request.user:
         raise PermissionDenied
 
-    all_players = game.player_set.all()
-    game.deck.deal(all_players)
+    response = game.start()
 
-    player = all_players.get(user=request.user)
-    player_html = render_to_string('game/player_snippet.html', {'player': player})
-
-    other_players = all_players.exclude(user=request.user)
-    other_html = [(p.user.username, render_to_string('game/other_player_snippet.html', {'player': p})) for p in other_players]
-
-    return JsonResponse({'self': player_html,
-                        'players': other_html})
+    return JsonResponse(response)

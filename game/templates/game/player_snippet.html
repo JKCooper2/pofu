@@ -4,6 +4,9 @@
 <h5 class="panel-header">{{ player.user.username }}</h5>
 Points: {{ player.points }}<br>
 Cards Left: {{ player.cards_left }}
+{% if player.turn %}
+    <h3>YOUR TURN</h3>
+{% endif %}
 
 <div class="player-cards">
     {% for card in player.cards %}
