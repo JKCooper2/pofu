@@ -1,0 +1,21 @@
+.player-cards {
+    margin-top: 50px;
+    margin-left: 30px;
+}
+
+.playing-card {
+    float: left;
+    margin-left: -30px;
+    margin-top: -50px;
+    border: 1px solid #ccc;
+    background-color: white;
+}
+
+.playing-card img {
+    width: 70px;
+    height: 100px;
+}
+
+.playing-card:hover {
+    border: 1px solid #777;
+}

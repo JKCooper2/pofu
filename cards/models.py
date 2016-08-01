@@ -28,10 +28,12 @@ RANKS = (
 class Card(models.Model):
     suit = models.CharField(max_length=1, choices=SUITS)
     rank = models.CharField(max_length=2, choices=RANKS)
-    image = models.FileField(blank=True)
+
+    def image_path(self):
+        return str(self.get_rank_display()).lower() + "_of_" + str(self.get_suit_display()).lower() + ".png"
 
     def short(self):
-        return self.rank, self.suit
+        return self.rank, self.suit, self.image_path()
 
     def __str__(self):
         return self.get_rank_display() + " of " + self.get_suit_display()

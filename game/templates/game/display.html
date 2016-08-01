@@ -7,6 +7,11 @@
 <script src="{% static 'game/game.js' %}"></script>
 {% endblock js %}
 
+{% block css %}
+{{ block.super }}
+<link href="{% static 'game/game.css' %}" rel="stylesheet" type="text/css">
+{% endblock css %}
+
 {% block content %}
 <div class="row">
     <div id="header">
