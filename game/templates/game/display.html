@@ -21,7 +21,7 @@
         <div class="row">
             <div id="other_players">
                 {% for other_player in other_players %}
-                    <div id="player-{{other_player.user.username">
+                    <div id="player-{{other_player.user.username}}">
                         {% include "game/other_player_snippet.html" with player=other_player %}
                     </div>
                 {% endfor %}

@@ -1,4 +1,5 @@
 from django.db import models
+import random
 
 SUITS = (
     ('H', 'Hearts'),
@@ -46,10 +47,16 @@ class Deck(models.Model):
         for player in players:
             player.hand.cards.clear()
 
+        shuffle_order = list(range(len(self.cards)))
+        random.shuffle(shuffle_order)
+
         for i in range(len(self.cards)):
-            players[i % len(players)].hand.cards.add(self.cards[i])
+            players[i % len(players)].hand.cards.add(self.cards[shuffle_order[i]])
 
 
 class Hand(models.Model):
-    cards = models.ManyToManyField(Card, blank=True)
+    cards = models.ManyToManyField('cards.Card')
+    player = models.OneToOneField('game.Player')
 
+    def __str__(self):
+        return "Hand " + str(self.id)

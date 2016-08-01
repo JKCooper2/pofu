@@ -34,8 +34,8 @@ GAME_STATUS = (
 class Game(models.Model):
     status = models.CharField(max_length=1, default='A', choices=GAME_STATUS)
     title = models.CharField(max_length=50, blank=True)
+    host = models.ForeignKey(User)
     deck = Deck()
-    host = models.ForeignKey(User, null=True)
 
     objects = GamesManager()
 
@@ -44,10 +44,14 @@ class Game(models.Model):
 
 
 class Player(models.Model):
-    game = models.ForeignKey(Game)
+    game = models.ForeignKey('game.Game')
     user = models.ForeignKey(User)
     points = models.IntegerField(default=0)
-    hand = models.ForeignKey(Hand, null=True)
+
+    def save(self, **kwargs):
+        super(Player, self).save(**kwargs)
+        hand = Hand(player=self)
+        hand.save()
 
     def __str__(self):
         return str(self.game) + " - " + self.user.username
@@ -70,7 +74,7 @@ class Setup(models.Model):
                                       help_text="2-8 players",
                                       validators=[MinValueValidator(2, message="Must have at least 2 players"),
                                                   MaxValueValidator(8, message="Cannot have more than 8 players")])
-    host = models.ForeignKey(User, null=True)
+    host = models.ForeignKey(User)
     timestamp = models.DateTimeField(auto_now_add=True)
     message = models.CharField(max_length=300, blank=True)
 
@@ -90,8 +94,8 @@ class Setup(models.Model):
 
 
 class Invitation(models.Model):
-    setup = models.ForeignKey(Setup, null=True)
-    user = models.ForeignKey(User, null=True)
+    setup = models.ForeignKey('game.Setup', null=True)
+    user = models.ForeignKey(User)
 
     def __str__(self):
         return str(self.setup) + ": " + self.user.username

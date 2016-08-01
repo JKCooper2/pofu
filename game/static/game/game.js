@@ -13,8 +13,9 @@ $("#start-game").on('click', function(){
         success: function(resp) {
              $("#player-self").html(resp['self']);
 
-            for(player in resp['players'])
+            for(var i = 0; i < resp['players'].length; i++)
             {
+                player = resp['players'][i];
                 $("#player-"+player[0]).html(player[1]);
             }
         }

@@ -104,7 +104,7 @@ def start(request, pk):
     player_html = render_to_string('game/player_snippet.html', {'player': player})
 
     other_players = all_players.exclude(user=request.user)
-    other_html = [render_to_string('game/other_player_snippet.html', {'player': p}) for p in other_players]
+    other_html = [(p.user.username, render_to_string('game/other_player_snippet.html', {'player': p})) for p in other_players]
 
     return JsonResponse({'self': player_html,
                         'players': other_html})
