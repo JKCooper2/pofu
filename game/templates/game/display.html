@@ -10,31 +10,30 @@
 {% block content %}
 <div class="row">
     <div id="header">
-        Game <a id="game-id" class="inline">{{ game.id }}</a> <br>
-        Cards: {{ game.deck.cards.count }}
+        <h3 class="panel-header">Game <span id="game-id">{{ game.id }}</span></h3>
     </div>
     <div id="table">
         <div class="row">
-            <div id="other_player">
+            <div id="other_players">
                 {% for other_player in other_players %}
-                    <div class="well col-sm-1">
-                        {{ other_player.user.username }} <br>
-                        Points: {{ other_player.points }}
+                    <div id="player-{{other_player.user.username">
+                        {% include "game/other_player_snippet.html" with player=other_player %}
                     </div>
                 {% endfor %}
             </div>
         </div>
         <div class="row">
             <div id="player_section">
-                <div class="well col-md-12">
-                    {{ player.user.username }}<br>
-                    Points: {{ player.points }}
+                <div class="well col-md-12" id="player-self">
+                    {% include "game/player_snippet.html" with player=player %}
                 </div>
             </div>
         </div>
     </div>
 
-    <a class="btn btn-success" role="button" id="start-game">Start Game</a>
+    <div id="host-controls">
+        {% include "game/host_controls.html" with host=player game=game %}
+    </div>
 </div>
 
 

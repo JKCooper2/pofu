@@ -1,0 +1,5 @@
+{% if game.host.username == player.user.username %}
+    <a class="btn btn-success" role="button" id="start-game">Start Game</a>
+{% else %}
+    Not Host
+{% endif %}

@@ -11,7 +11,12 @@ $("#start-game").on('click', function(){
         url: '/game/start/' + $("#game-id").html() + '/',
         data: {},
         success: function(resp) {
-            console.log(resp);
+             $("#player-self").html(resp['self']);
+
+            for(player in resp['players'])
+            {
+                $("#player-"+player[0]).html(player[1]);
+            }
         }
     });
 })

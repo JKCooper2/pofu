@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
 
-from cards.models import Deck
+from cards.models import Deck, Hand
 
 
 class GamesManager(models.Manager):
@@ -47,9 +47,16 @@ class Player(models.Model):
     game = models.ForeignKey(Game)
     user = models.ForeignKey(User)
     points = models.IntegerField(default=0)
+    hand = models.ForeignKey(Hand, null=True)
 
     def __str__(self):
         return str(self.game) + " - " + self.user.username
+
+    def cards_left(self):
+        return self.hand.cards.count()
+
+    def cards(self):
+        return [card.short() for card in self.hand.cards.all()]
 
 
 class SetupManager(models.Manager):
