@@ -11,4 +11,6 @@ urlpatterns = [
     url(r'^leave/(?P<pk>\d+)/$', views.leave_game, name='leave'),
     url(r'^display/(?P<pk>\d+)/$', views.display, name='display'),
     url(r'^start/(?P<pk>\d+)/$', views.start, name='start'),
+    url(r'^update/(?P<pk>\d+)/select/$', views.select, name='select'),
+    url(r'^update/(?P<pk>\d+)/deselect/$', views.deselect, name='deselect'),
 ]

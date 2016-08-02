@@ -89,8 +89,29 @@ class Player(models.Model):
     def cards_left(self):
         return self.hand.cards.count()
 
-    def cards(self):
+    def cards_in_hand(self):
         return [card.short() for card in self.hand.cards.all()]
+
+    def selected_cards(self):
+        return [card.short() for card in self.hand.selected.all()]
+
+    def select(self, card_string):
+        card_details = card_string.split()
+        card = {'rank': card_details[0], 'suit': card_details[1]}
+
+        self.hand.select(card)
+
+        player_html = render_to_string('game/player_snippet.html', {'player': self})
+        return {'self': player_html}
+
+    def deselect(self, card_string):
+        card_details = card_string.split()
+        card = {'rank': card_details[0], 'suit': card_details[1]}
+
+        self.hand.deselect(card)
+
+        player_html = render_to_string('game/player_snippet.html', {'player': self})
+        return {'self': player_html}
 
 
 class SetupManager(models.Manager):

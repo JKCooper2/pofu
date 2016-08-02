@@ -1,9 +1,14 @@
 $(document).ready(function(){
     console.log("Ready!");
-})
+});
 
 $("#start-game").on('click', function(){
     console.log("Start Game clicked");
+
+    if(!confirm("Are you sure you want to restart the game?"))
+    {
+        return;
+    }
 
     $.ajax({
         headers: {"X-CSRFToken": getCookie('csrftoken')},
@@ -20,4 +25,36 @@ $("#start-game").on('click', function(){
             }
         }
     });
-})
+});
+
+$(document).on('click', '.card-in-hand', function(){
+    card = this.id.substring(2);
+
+    console.log("Card " + card + " clicked");
+
+    $.ajax({
+        headers: {"X-CSRFToken": getCookie('csrftoken')},
+        type: 'POST',
+        url: '/game/update/' + $("#game-id").html() + '/select/',
+        data: {"card": card},
+        success: function(resp) {
+             $("#player-self").html(resp['self']);
+        }
+    });
+});
+
+$(document).on('click', '.selected-card', function(){
+    card = this.id.substring(2);
+
+    console.log("Card " + card + " clicked");
+
+    $.ajax({
+        headers: {"X-CSRFToken": getCookie('csrftoken')},
+        type: 'POST',
+        url: '/game/update/' + $("#game-id").html() + '/deselect/',
+        data: {"card": card},
+        success: function(resp) {
+             $("#player-self").html(resp['self']);
+        }
+    });
+});

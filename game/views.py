@@ -99,3 +99,26 @@ def start(request, pk):
     response = game.start()
 
     return JsonResponse(response)
+
+
+@login_required
+def select(request, pk):
+    game = get_object_or_404(Game, pk=pk)
+    player = game.player_set.get(user=request.user)
+
+    if request.method == 'POST':
+        card = request.POST['card']
+        response = player.select(card)
+
+    return JsonResponse(response)
+
+@login_required
+def deselect(request, pk):
+    game = get_object_or_404(Game, pk=pk)
+    player = game.player_set.get(user=request.user)
+
+    if request.method == 'POST':
+        card = request.POST['card']
+        response = player.deselect(card)
+
+    return JsonResponse(response)

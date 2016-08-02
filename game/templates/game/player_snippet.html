@@ -1,17 +1,40 @@
 {% load staticfiles %}
 {% static "" as baseUrl %}
 
-<h5 class="panel-header">{{ player.user.username }}</h5>
-Points: {{ player.points }}<br>
-Cards Left: {{ player.cards_left }}
-{% if player.turn %}
-    <h3>YOUR TURN</h3>
-{% endif %}
+<div class="col-md-6">
+    <h5 class="panel-header">{{ player.user.username }}</h5>
+    Points: {{ player.points }}<br>
+    Cards Left: {{ player.cards_left }}
 
-<div class="player-cards">
-    {% for card in player.cards %}
-        <div class="playing-card">
-            <img src="{{baseUrl}}cards/{{card.2}}"/>
+    <div class="row">
+        <div class="player-cards">
+            {% for card in player.cards_in_hand %}
+                <div class="playing-card">
+                    <div class="card-in-hand" id="h {{card.0}} {{card.1}}">
+                        <img src="{{baseUrl}}cards/{{card.2}}"/>
+                    </div>
+                </div>
+            {% endfor %}
         </div>
-    {% endfor %}
+    </div>
+</div>
+
+<div class="col-md-5 col-md-push-1">
+    <div class="row">
+        <div class="player-cards" id="selected-cards">
+            {% for card in player.selected_cards %}
+                <div class="playing-card">
+                    <div class="selected-card" id="s {{card.0}} {{card.1}}">
+                        <img src="{{baseUrl}}cards/{{card.2}}"/>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="row">
+        {% if player.turn %}
+            <a class="btn btn-success" role="button" id="submit-action">Submit Action</a>
+        {% endif %}
+    </div>
 </div>

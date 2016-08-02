@@ -55,8 +55,31 @@ class Deck(models.Model):
 
 
 class Hand(models.Model):
-    cards = models.ManyToManyField('cards.Card')
+    cards = models.ManyToManyField('cards.Card', related_name="cards")
     player = models.OneToOneField('game.Player')
+    selected = models.ManyToManyField('cards.Card', related_name="selected")
+
+    def contains_card(self, card):
+        return self.cards.filter(suit=card['suit'], rank=card['rank']).count() == 1
+
+    def select(self, card):
+        if not self.contains_card(card):
+            return
+
+        c = self.cards.get(suit=card['suit'], rank=card['rank'])
+        self.selected.add(c)
+        self.cards.remove(c)
+
+    def is_card_in_hand(self, card):
+        return self.selected.filter(suit=card['suit'], rank=card['rank']).count() == 1
+
+    def deselect(self, card):
+        if not self.is_card_in_hand(card):
+            return
+
+        c = self.selected.get(suit=card['suit'], rank=card['rank'])
+        self.cards.add(c)
+        self.selected.remove(c)
 
     def __str__(self):
         return "Hand " + str(self.id)
