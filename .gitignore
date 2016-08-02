@@ -90,3 +90,6 @@ ENV/
 
 # Pycharm Project
 .idea
+
+# Test Coverage Reports
+reports/

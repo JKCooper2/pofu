@@ -133,3 +133,11 @@ LOGOUT_URL = 'logout'
 LOGIN_REDIRECT_URL = 'users:home'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
+
+TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+NOSE_ARGS = ['--with-spec',
+             '--spec-color',
+             '--with-coverage',
+             '--cover-html',
+             '--cover-package=.',
+             '--cover-html-dir=reports/cover']
