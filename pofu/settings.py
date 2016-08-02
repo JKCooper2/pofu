@@ -137,7 +137,7 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 NOSE_ARGS = ['--with-spec',
              '--spec-color',
-             '--with-coverage',
+             # '--with-coverage',
              '--cover-html',
              '--cover-package=.',
              '--cover-html-dir=reports/cover']
