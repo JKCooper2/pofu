@@ -46,6 +46,10 @@ class Deck(models.Model):
     def deal(self, players):
         for player in players:
             player.hand.cards.clear()
+            player.hand.selected.clear()
+
+            if player.action is not None:
+                player.action.cards.clear()
 
         shuffle_order = list(range(len(self.cards)))
         random.shuffle(shuffle_order)

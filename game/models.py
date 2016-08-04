@@ -1,3 +1,5 @@
+import time
+
 from django.db import models
 from django.template.loader import render_to_string
 from django.contrib.auth.models import User
@@ -79,8 +81,13 @@ class Game(models.Model):
         current_player = self.player_set.get(position=self.turn)
         next_player = self.player_set.get(position=self.turn+1)
 
+        print(current_player.user.username, next_player.user.username)
+
         current_player.turn = False
         next_player.turn = True
+
+        current_player.save()
+        next_player.save()
 
 
 class Player(models.Model):
@@ -89,7 +96,7 @@ class Player(models.Model):
     points = models.IntegerField(default=0)
     position = models.IntegerField()
     turn = models.BooleanField(default=False)
-    action = models.OneToOneField('game.Action', null=True)
+    action = models.OneToOneField('game.Action', null=True, blank=True)
 
     def save(self, **kwargs):
         super(Player, self).save(**kwargs)
@@ -110,6 +117,9 @@ class Player(models.Model):
     def selected_cards(self):
         return [card.short() for card in self.hand.selected.all()]
 
+    def last_action(self):
+        return [card.short() for card in self.action.cards.all()]
+
     def snippet_html(self):
         player_html = render_to_string('game/player_snippet.html', {'player': self})
         return {'self': player_html}
@@ -127,15 +137,21 @@ class Player(models.Model):
         self.hand.deselect(card)
 
     def submit_action(self, face):
+        if not self.turn:
+            return
+
         face_up = face == "up"
 
         action = Action(face_up=face_up)
         action.save()
         action.cards.add(*self.hand.selected.all())
+        action.save()
 
         self.action = action
+        self.save()
 
         if self.action.is_valid():
+            self.hand.selected.clear()
             self.game.next_turn()
 
 
