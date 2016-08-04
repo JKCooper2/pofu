@@ -20,21 +20,38 @@
 </div>
 
 <div class="col-md-5 col-md-push-1">
-    <div class="row">
-        <div class="player-cards" id="selected-cards">
-            {% for card in player.selected_cards %}
-                <div class="playing-card">
-                    <div class="selected-card" id="s {{card.0}} {{card.1}}">
-                        <img src="{{baseUrl}}cards/{{card.2}}"/>
-                    </div>
-                </div>
-            {% endfor %}
+    <div class=container" id="selected-cards">
+        <div class="row">
+            <h3 class="panel-header text-center">Your Action:</h3>
         </div>
-    </div>
 
-    <div class="row">
-        {% if player.turn %}
-            <a class="btn btn-success" role="button" id="submit-action">Submit Action</a>
-        {% endif %}
+        <div class="row">
+            <div class="player-cards">
+                {% for card in player.selected_cards %}
+                    <div class="playing-card">
+                        <div class="selected-card" id="s {{card.0}} {{card.1}}">
+                            <img src="{{baseUrl}}cards/{{card.2}}"/>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <div id="card-face">
+                <form id="card-face-form">
+                  <input type="radio" name="card-face" value="up" checked="checked">Face Up<br>
+                  <input type="radio" name="card-face" value="down">Face Down<br>
+                </form>
+            </div>
+            {% if player.action.has_error %}
+                <div id="action-error">
+                    <p>{{ player.action.error }}</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="row">
+            {% if player.turn %}
+                <a class="btn btn-success" role="button" id="submit-action">Submit Action</a>
+            {% endif %}
+        </div>
     </div>
 </div>

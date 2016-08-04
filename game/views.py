@@ -108,9 +108,10 @@ def select(request, pk):
 
     if request.method == 'POST':
         card = request.POST['card']
-        response = player.select(card)
+        player.select(card)
 
-    return JsonResponse(response)
+    return JsonResponse(player.snippet_html())
+
 
 @login_required
 def deselect(request, pk):
@@ -119,6 +120,18 @@ def deselect(request, pk):
 
     if request.method == 'POST':
         card = request.POST['card']
-        response = player.deselect(card)
+        player.deselect(card)
 
-    return JsonResponse(response)
+    return JsonResponse(player.snippet_html())
+
+
+@login_required
+def submit(request, pk):
+    game = get_object_or_404(Game, pk=pk)
+    player = game.player_set.get(user=request.user)
+
+    if request.method == 'POST':
+        post = request.POST
+        player.submit_action(post['face'])
+
+    return JsonResponse(player.snippet_html())

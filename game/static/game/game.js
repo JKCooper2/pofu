@@ -58,3 +58,17 @@ $(document).on('click', '.selected-card', function(){
         }
     });
 });
+
+$(document).on('click', '#submit-action', function(){
+     face = $('input[name=card-face]:checked', '#card-face-form').val();
+
+     $.ajax({
+        headers: {"X-CSRFToken": getCookie('csrftoken')},
+        type: 'POST',
+        url: '/game/update/' + $("#game-id").html() + '/submit/',
+        data: {"face": face},
+        success: function(resp) {
+             $("#player-self").html(resp['self']);
+        }
+    });
+});

@@ -5,7 +5,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 
 import random
 
-from cards.models import Deck, Hand
+from cards.models import Deck, Hand, Card
 
 
 class GamesManager(models.Manager):
@@ -68,6 +68,20 @@ class Game(models.Model):
         return {'self': player_html,
                 'players': other_html}
 
+    def end_round(self):
+        print("END OF THE ROUND")
+
+    def next_turn(self):
+        if self.turn >= self.player_set.count():
+            self.end_round()
+            return
+
+        current_player = self.player_set.get(position=self.turn)
+        next_player = self.player_set.get(position=self.turn+1)
+
+        current_player.turn = False
+        next_player.turn = True
+
 
 class Player(models.Model):
     game = models.ForeignKey('game.Game')
@@ -75,6 +89,7 @@ class Player(models.Model):
     points = models.IntegerField(default=0)
     position = models.IntegerField()
     turn = models.BooleanField(default=False)
+    action = models.OneToOneField('game.Action', null=True)
 
     def save(self, **kwargs):
         super(Player, self).save(**kwargs)
@@ -95,14 +110,15 @@ class Player(models.Model):
     def selected_cards(self):
         return [card.short() for card in self.hand.selected.all()]
 
+    def snippet_html(self):
+        player_html = render_to_string('game/player_snippet.html', {'player': self})
+        return {'self': player_html}
+
     def select(self, card_string):
         card_details = card_string.split()
         card = {'rank': card_details[0], 'suit': card_details[1]}
 
         self.hand.select(card)
-
-        player_html = render_to_string('game/player_snippet.html', {'player': self})
-        return {'self': player_html}
 
     def deselect(self, card_string):
         card_details = card_string.split()
@@ -110,8 +126,39 @@ class Player(models.Model):
 
         self.hand.deselect(card)
 
-        player_html = render_to_string('game/player_snippet.html', {'player': self})
-        return {'self': player_html}
+    def submit_action(self, face):
+        face_up = face == "up"
+
+        action = Action(face_up=face_up)
+        action.save()
+        action.cards.add(*self.hand.selected.all())
+
+        self.action = action
+
+        if self.action.is_valid():
+            self.game.next_turn()
+
+
+class Action(models.Model):
+    face_up = models.BooleanField(default=True)
+    cards = models.ManyToManyField(Card)
+    error = models.CharField(max_length=100, default="")
+
+    def has_error(self):
+        return len(self.error) > 0
+
+    def is_valid(self):
+        if self.cards.count() <= 0:
+            self.error = "Need to selected at least 1 card to play"
+            return False
+
+        ranks = [c.rank for c in self.cards.all()]
+        if len(set(ranks)) != 1:
+            self.error = "All cards must be of the same rank"
+            return False
+
+        self.error = ""
+        return True
 
 
 class SetupManager(models.Manager):

@@ -19,3 +19,11 @@
 .playing-card:hover {
     border: 1px solid #777;
 }
+
+#selected-cards {
+    border: 2px solid;
+    margin: 10px;
+    padding: 15px;
+    padding-left: 30px;
+    padding-bottom: 5px;
+}
