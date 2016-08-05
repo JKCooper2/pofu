@@ -114,6 +114,7 @@ class Player(models.Model):
     turn = models.BooleanField(default=False)
     action = models.OneToOneField('game.Action', null=True, blank=True)
     error = models.CharField(max_length=100, default="")
+    face_up = models.BooleanField(default=False)
 
     def save(self, **kwargs):
         super(Player, self).save(**kwargs)
@@ -140,9 +141,19 @@ class Player(models.Model):
     def has_error(self):
         return len(self.error) > 0
 
+    def played_cards(self):
+        if self.action.face_up:
+            return [card.short() for card in self.action.cards.all()]
+        else:
+            return [card.back() for card in self.action.cards.all()]
+
     def snippet_html(self):
         player_html = render_to_string('game/player_snippet.html', {'player': self})
         return {'self': player_html}
+
+    def select_face(self, face):
+        self.face_up = face == "up"
+        self.save()
 
     def select(self, card_string):
         card_details = card_string.split()

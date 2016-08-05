@@ -36,6 +36,9 @@ class Card(models.Model):
     def short(self):
         return self.rank, self.suit, self.image_path()
 
+    def back(self):
+        return 0, 0, "back.png"
+
     def __str__(self):
         return self.get_rank_display() + " of " + self.get_suit_display()
 

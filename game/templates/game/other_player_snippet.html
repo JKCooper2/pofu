@@ -1,5 +1,17 @@
-<div class="well col-sm-2">
+{% load staticfiles %}
+{% static "" as baseUrl %}
+
+<div class="well col-sm-4">
     <h5 class="panel-header">{{ player.user.username }}</h5>
     Points: {{ player.points }}<br>
     Cards Left: {{ player.cards_left }}
+    <div class="player-cards">
+        {% for card in player.played_cards %}
+            <div class="playing-card">
+                <div class="selected-card">
+                    <img src="{{baseUrl}}cards/{{card.2}}"/>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
 </div>

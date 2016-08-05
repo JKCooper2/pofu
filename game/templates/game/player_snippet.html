@@ -41,8 +41,13 @@
                     <div class="row">
                         <div id="card-face">
                             <form id="card-face-form">
-                              <input type="radio" name="card-face" value="up" checked="checked">Face Up<br>
-                              <input type="radio" name="card-face" value="down">Face Down<br>
+                                {% if player.face_up %}
+                                    <input type="radio" name="card-face" value="up" checked="checked">Face Up<br>
+                                    <input type="radio" name="card-face" value="down">Face Down<br>
+                                {% else %}
+                                    <input type="radio" name="card-face" value="up">Face Up<br>
+                                    <input type="radio" name="card-face" value="down" checked="checked">Face Down<br>
+                                {% endif %}
                             </form>
                         </div>
                     </div>

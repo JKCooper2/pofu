@@ -60,6 +60,20 @@ $(document).on('click', '.selected-card', function(){
     });
 });
 
+$(document).on('change', 'input[name=card-face]', function () {
+     face = $('input[name=card-face]:checked', '#card-face-form').val();
+
+     $.ajax({
+        headers: {"X-CSRFToken": getCookie('csrftoken')},
+        type: 'POST',
+        url: '/game/update/' + $("#game-id").html() + '/face/',
+        data: {"face": face},
+        success: function(resp) {
+             $("#player-self").html(resp['self']);
+        }
+    });
+});
+
 $(document).on('click', '#submit-action', function(){
      face = $('input[name=card-face]:checked', '#card-face-form').val();
 

@@ -145,3 +145,17 @@ def submit(request, pk):
         player.submit_action(face)
 
     return JsonResponse(player.snippet_html())
+
+
+@login_required
+def face(request, pk):
+    game = get_object_or_404(Game, pk=pk)
+    player = game.player_set.get(user=request.user)
+
+    if request.method == 'POST':
+        post = request.POST
+        face = post['face'] if 'face' in post else None
+        player.select_face(face)
+
+    return JsonResponse(player.snippet_html())
+
