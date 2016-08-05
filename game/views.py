@@ -96,7 +96,8 @@ def start(request, pk):
     if game.host != request.user:
         raise PermissionDenied
 
-    response = game.start()
+    game.start()
+    response = game.poll(request.user)
 
     return JsonResponse(response)
 
@@ -126,12 +127,21 @@ def deselect(request, pk):
 
 
 @login_required
+def poll(request, pk):
+    game = get_object_or_404(Game, pk=pk)
+    response = game.poll(request.user)
+
+    return JsonResponse(response)
+
+
+@login_required
 def submit(request, pk):
     game = get_object_or_404(Game, pk=pk)
     player = game.player_set.get(user=request.user)
 
     if request.method == 'POST':
         post = request.POST
-        player.submit_action(post['face'])
+        face = post['face'] if 'face' in post else None
+        player.submit_action(face)
 
     return JsonResponse(player.snippet_html())

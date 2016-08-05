@@ -37,7 +37,7 @@
                     {% endfor %}
                 </div>
 
-                {% if player.turn %}
+                {% if player.game.card_face == 2 and player.turn %}
                     <div class="row">
                         <div id="card-face">
                             <form id="card-face-form">
@@ -47,9 +47,9 @@
                         </div>
                     </div>
                 {% endif %}
-                {% if player.action.has_error %}
+                {% if player.has_error %}
                     <div id="action-error">
-                        <p>{{ player.action.error }}</p>
+                        <p>{{ player.error }}</p>
                     </div>
                 {% endif %}
                 {% if player.turn %}

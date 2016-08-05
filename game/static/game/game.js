@@ -1,5 +1,6 @@
 $(document).ready(function(){
-    console.log("Ready!");
+    console.log("Starting Poll");
+    setTimeout(doPoll, 3000);
 });
 
 $("#start-game").on('click', function(){
@@ -72,3 +73,31 @@ $(document).on('click', '#submit-action', function(){
         }
     });
 });
+
+
+
+function doPoll(){
+    $.ajax({
+        headers: {"X-CSRFToken": getCookie('csrftoken')},
+        type: 'POST',
+        url: '/game/poll/' + $("#game-id").html() + "/",
+        data: {},
+        success: function(resp) {
+            console.log("Polling for new updates...")
+
+             $("#player-self").html(resp['self']);
+
+            for(var i = 0; i < resp['players'].length; i++)
+            {
+                player = resp['players'][i];
+                $("#player-"+player[0]).html(player[1]);
+            }
+
+            setTimeout(doPoll, 5000);
+        },
+        error: function(){
+            setTimeout(doPoll, 5000);
+        }
+    });
+}
+

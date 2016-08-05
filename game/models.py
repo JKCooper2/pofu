@@ -47,6 +47,7 @@ class Game(models.Model):
     host = models.ForeignKey(User)
     deck = Deck()
     turn = models.IntegerField(default=0)
+    card_face = models.IntegerField(default=2)  # 0 - down, 1 - up, 2 - unset
 
     objects = GamesManager()
 
@@ -57,15 +58,24 @@ class Game(models.Model):
         all_players = self.player_set.all()
         self.deck.deal(all_players)
 
+        # Reset turns
+        self.turn = 0
+        self.card_face = 2
+        self.save()
+
         first = all_players.get(position=0)
         first.turn = True
         first.save()
 
-        player = all_players.get(user=self.host)
+    def poll(self, user):
+        all_players = self.player_set.all()
+
+        player = all_players.get(user=user)
         player_html = render_to_string('game/player_snippet.html', {'player': player})
 
-        other_players = all_players.exclude(user=self.host)
-        other_html = [(p.user.username, render_to_string('game/other_player_snippet.html', {'player': p})) for p in other_players]
+        other_players = all_players.exclude(user=user)
+        other_html = [(p.user.username, render_to_string('game/other_player_snippet.html', {'player': p})) for p in
+                      other_players]
 
         return {'self': player_html,
                 'players': other_html}
@@ -74,20 +84,26 @@ class Game(models.Model):
         print("END OF THE ROUND")
 
     def next_turn(self):
+        self.turn += 1
+
+        # Set face-up so other players in the round must follow play
+        if self.turn == 1:
+            self.card_face = int(self.player_set.get(position=0).action.face_up)
+
         if self.turn >= self.player_set.count():
             self.end_round()
-            return
+            next_player = self.player_set.get(position=0)
 
-        current_player = self.player_set.get(position=self.turn)
-        next_player = self.player_set.get(position=self.turn+1)
+        else:
+            next_player = self.player_set.get(position=self.turn)
 
-        print(current_player.user.username, next_player.user.username)
+        print(next_player.user.username)
+        print(self.turn, self.card_face)
 
-        current_player.turn = False
         next_player.turn = True
-
-        current_player.save()
         next_player.save()
+
+        self.save()
 
 
 class Player(models.Model):
@@ -97,6 +113,7 @@ class Player(models.Model):
     position = models.IntegerField()
     turn = models.BooleanField(default=False)
     action = models.OneToOneField('game.Action', null=True, blank=True)
+    error = models.CharField(max_length=100, default="")
 
     def save(self, **kwargs):
         super(Player, self).save(**kwargs)
@@ -109,7 +126,7 @@ class Player(models.Model):
         return str(self.game) + " - " + self.user.username
 
     def cards_left(self):
-        return self.hand.cards.count()
+        return self.hand.cards.count() + self.hand.selected.count()
 
     def cards_in_hand(self):
         return [card.short() for card in self.hand.cards.all()]
@@ -119,6 +136,9 @@ class Player(models.Model):
 
     def last_action(self):
         return [card.short() for card in self.action.cards.all()]
+
+    def has_error(self):
+        return len(self.error) > 0
 
     def snippet_html(self):
         player_html = render_to_string('game/player_snippet.html', {'player': self})
@@ -140,41 +160,37 @@ class Player(models.Model):
         if not self.turn:
             return
 
-        face_up = face == "up"
+        face_up = face == "up" if face is not None else bool(self.game.card_face)
 
         action = Action(face_up=face_up)
         action.save()
         action.cards.add(*self.hand.selected.all())
         action.save()
 
-        self.action = action
-        self.save()
+        self.error = action.validate()
 
-        if self.action.is_valid():
+        if not self.has_error():
+            self.action = action
             self.hand.selected.clear()
+            self.turn = False   # Used to ensure DB commit is done in time before redisplay
+            self.save()
+
             self.game.next_turn()
 
 
 class Action(models.Model):
     face_up = models.BooleanField(default=True)
     cards = models.ManyToManyField(Card)
-    error = models.CharField(max_length=100, default="")
 
-    def has_error(self):
-        return len(self.error) > 0
-
-    def is_valid(self):
+    def validate(self):
         if self.cards.count() <= 0:
-            self.error = "Need to selected at least 1 card to play"
-            return False
+            return "Need to selected at least 1 card to play"
 
         ranks = [c.rank for c in self.cards.all()]
         if len(set(ranks)) != 1:
-            self.error = "All cards must be of the same rank"
-            return False
+            return "All cards must be of the same rank"
 
-        self.error = ""
-        return True
+        return ""
 
 
 class SetupManager(models.Manager):
