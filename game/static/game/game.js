@@ -4,7 +4,7 @@ $(document).ready(function(){
 });
 
 $("#start-game").on('click', function(){
-    console.log("Start Game clicked");
+    $("#start-game").attr('disabled', true);
 
     if(!confirm("Are you sure you want to restart the game?"))
     {
@@ -24,6 +24,8 @@ $("#start-game").on('click', function(){
                 player = resp['players'][i];
                 $("#player-"+player[0]).html(player[1]);
             }
+
+            $("#start-game").attr('disabled', false);
         }
     });
 });
@@ -75,6 +77,8 @@ $(document).on('change', 'input[name=card-face]', function () {
 });
 
 $(document).on('click', '#submit-action', function(){
+     $('#submit-action').attr('disabled', true);
+
      face = $('input[name=card-face]:checked', '#card-face-form').val();
 
      $.ajax({
@@ -84,6 +88,23 @@ $(document).on('click', '#submit-action', function(){
         data: {"face": face},
         success: function(resp) {
              $("#player-self").html(resp['self']);
+
+             $('#submit-action').attr('disabled', false);
+        }
+    });
+});
+
+$(document).on('click', '#submit-ready', function(){
+     $('#submit-ready').attr('disabled', true);
+
+     $.ajax({
+        headers: {"X-CSRFToken": getCookie('csrftoken')},
+        type: 'POST',
+        url: '/game/update/' + $("#game-id").html() + '/ready/',
+        data: {},
+        success: function(resp) {
+             $("#player-self").html(resp['self']);
+             $('#submit-ready').attr('disabled', false);
         }
     });
 });

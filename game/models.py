@@ -48,6 +48,7 @@ class Game(models.Model):
     deck = Deck()
     turn = models.IntegerField(default=0)
     card_face = models.IntegerField(default=2)  # 0 - down, 1 - up, 2 - unset
+    round_end = models.BooleanField(default=True)
 
     objects = GamesManager()
 
@@ -56,16 +57,32 @@ class Game(models.Model):
 
     def start(self):
         all_players = self.player_set.all()
+
+        for player in all_players:
+            player.reset()
+
         self.deck.deal(all_players)
 
-        # Reset turns
         self.turn = 0
-        self.card_face = 2
         self.save()
 
         first = all_players.get(position=0)
         first.turn = True
         first.save()
+
+        self.start_round()
+
+    def start_round(self):
+        all_players = self.player_set.all()
+
+        if not all([player.ready for player in all_players]):
+            print("Not all players ready to start next round")
+            return
+
+        # Reset turns
+        self.card_face = 2
+        self.round_end = False
+        self.save()
 
     def poll(self, user):
         all_players = self.player_set.all()
@@ -81,24 +98,55 @@ class Game(models.Model):
                 'players': other_html}
 
     def end_round(self):
-        print("END OF THE ROUND")
+        all_players = self.player_set.all()
+
+        # Flip cards if necessary
+        for player in all_players:
+            player.action.face_up = True
+            player.action.save()
+            player.ready = False    # Used to trigger next round deal
+            player.save()
+
+        # Determine winner
+        best_score = 0
+        best_player = None
+
+        for player in all_players:
+            score = player.hand_score()
+
+            if score > best_score:
+                best_score = score
+                best_player = player
+
+        # Add points
+        points = sum([player.hand_points() for player in all_players])
+        best_player.points += points
+        best_player.turn = True  # Round winner starts next hand
+        self.turn = best_player.position
+        best_player.save()
+
+        # Display button to move to next round
+        self.card_face = 2
+        self.round_end = True
+        self.save()
 
     def next_turn(self):
         self.turn += 1
 
         # Set face-up so other players in the round must follow play
-        if self.turn == 1:
+        if self.card_face == 2:
             self.card_face = int(self.player_set.get(position=0).action.face_up)
 
         if self.turn >= self.player_set.count():
+            self.turn = 0
+
+        if all([player.action.cards.count() > 0 for player in self.player_set.all()]):
             self.end_round()
-            next_player = self.player_set.get(position=0)
 
         else:
             next_player = self.player_set.get(position=self.turn)
-
-        next_player.turn = True
-        next_player.save()
+            next_player.turn = True
+            next_player.save()
 
         self.save()
 
@@ -112,6 +160,7 @@ class Player(models.Model):
     action = models.OneToOneField('game.Action', null=True, blank=True)
     error = models.CharField(max_length=100, default="")
     face_up = models.BooleanField(default=False)
+    ready = models.BooleanField(default=False)
 
     def save(self, **kwargs):
         super(Player, self).save(**kwargs)
@@ -120,8 +169,20 @@ class Player(models.Model):
             hand = Hand(player=self)
             hand.save()
 
+    def reset(self):
+        self.points = 0
+        self.turn = False
+        self.error = ""
+        self.ready = True
+        self.save()
+
     def __str__(self):
         return str(self.game) + " - " + self.user.username
+
+    def set_ready(self):
+        self.ready = True
+        self.save()
+        self.game.start_round()
 
     def cards_left(self):
         return self.hand.cards.count() + self.hand.selected.count()
@@ -184,6 +245,28 @@ class Player(models.Model):
             self.save()
 
             self.game.next_turn()
+
+    def hand_score(self):
+        rank = self.action.cards.all()[0].rank
+        if rank == 'A':
+            rank = 1
+        elif rank == 'J':
+            rank = 11
+        elif rank == 'Q':
+            rank = 12
+        elif rank == 'K':
+            rank = 13
+
+        return self.action.cards.count() * 13 - 13 + int(rank)
+
+    def hand_points(self):
+        rank = self.action.cards.all()[0].rank
+
+        if rank in ['J', 'Q', 'K']:
+            return self.action.cards.count() * 2
+
+        else:
+            return self.action.cards.count()
 
 
 class Action(models.Model):

@@ -159,3 +159,14 @@ def face(request, pk):
 
     return JsonResponse(player.snippet_html())
 
+
+@login_required
+def ready(request, pk):
+    game = get_object_or_404(Game, pk=pk)
+    player = game.player_set.get(user=request.user)
+
+    if request.method == 'POST':
+        player.set_ready()
+
+    return JsonResponse(player.snippet_html())
+

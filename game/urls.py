@@ -15,5 +15,6 @@ urlpatterns = [
     url(r'^update/(?P<pk>\d+)/select/$', views.select, name='select'),
     url(r'^update/(?P<pk>\d+)/deselect/$', views.deselect, name='deselect'),
     url(r'^update/(?P<pk>\d+)/face/$', views.face, name='face'),
+    url(r'^update/(?P<pk>\d+)/ready/$', views.ready, name='ready'),
     url(r'^update/(?P<pk>\d+)/submit/$', views.submit, name='submit'),
 ]
