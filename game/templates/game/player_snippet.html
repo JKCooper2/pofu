@@ -22,7 +22,12 @@
 <div class="col-md-5 col-md-push-1">
     <div class=container" id="selected-cards">
         <div class="row">
-            <h3 class="panel-header text-center">Your Action:</h3>
+            {% if player.turn %}
+                <div class="text-center">
+                    <img src="{% static 'images/green-tick.png' %}" width="25px" height="25px">
+                    <b>Your Turn</b>
+                </div>
+            {% endif %}
         </div>
 
         <div class="row">

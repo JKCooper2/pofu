@@ -97,9 +97,6 @@ class Game(models.Model):
         else:
             next_player = self.player_set.get(position=self.turn)
 
-        print(next_player.user.username)
-        print(self.turn, self.card_face)
-
         next_player.turn = True
         next_player.save()
 

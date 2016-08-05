@@ -3,6 +3,9 @@
 
 <div class="well col-sm-4">
     <h5 class="panel-header">{{ player.user.username }}</h5>
+    {% if player.turn %}
+        <div class="text-right"><img src="{% static 'images/green-tick.png' %}" width="25px" height="25px"></div>
+    {% endif %}
     Points: {{ player.points }}<br>
     Cards Left: {{ player.cards_left }}
     <div class="player-cards">
