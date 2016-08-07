@@ -1,11 +1,10 @@
-import time
-
 from django.db import models
 from django.template.loader import render_to_string
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
 
 import random
+import numpy as np
 
 from cards.models import Deck, Hand, Card
 
@@ -49,6 +48,7 @@ class Game(models.Model):
     turn = models.IntegerField(default=0)
     card_face = models.IntegerField(default=2)  # 0 - down, 1 - up, 2 - unset
     round_end = models.BooleanField(default=True)
+    order = models.CharField(max_length=40, blank=True)
 
     objects = GamesManager()
 
@@ -64,6 +64,7 @@ class Game(models.Model):
         self.deck.deal(all_players)
 
         self.turn = 0
+        self.order = ','.join(map(str, list(range(len(all_players)))))
         self.save()
 
         first = all_players.get(position=0)
@@ -114,6 +115,12 @@ class Game(models.Model):
         for player in all_players:
             score = player.hand_score()
 
+            print("FIRST PLAY:", player.position, self.order.split(',')[0], self.card_face)
+
+            if player.position == int(self.order.split(',')[0]) and self.card_face == 1:
+                print(player.user.username, " GETS BONUS")
+                score += 2
+
             if score > best_score:
                 best_score = score
                 best_player = player
@@ -122,12 +129,16 @@ class Game(models.Model):
         points = sum([player.hand_points() for player in all_players])
         best_player.points += points
         best_player.turn = True  # Round winner starts next hand
-        self.turn = best_player.position
         best_player.save()
 
         # Display button to move to next round
         self.card_face = 2
         self.round_end = True
+
+        order0 = list(range(len(all_players)))
+        order1 = order0[best_player.position:] + order0[:best_player.position]
+
+        self.order = ','.join(map(str, list(order1)))
         self.save()
 
     def next_turn(self):
@@ -139,12 +150,10 @@ class Game(models.Model):
 
         if self.turn >= self.player_set.count():
             self.turn = 0
-
-        if all([player.action.cards.count() > 0 for player in self.player_set.all()]):
             self.end_round()
 
         else:
-            next_player = self.player_set.get(position=self.turn)
+            next_player = self.player_set.get(position=self.order.split(',')[self.turn])
             next_player.turn = True
             next_player.save()
 
