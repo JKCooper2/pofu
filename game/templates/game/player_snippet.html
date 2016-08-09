@@ -4,7 +4,8 @@
 <div class="col-md-6">
     <h5 class="panel-header">{{ player.user.username }}</h5>
     Points: {{ player.points }}<br>
-    Cards Left: {{ player.cards_left }}
+    Cards Left: {{ player.cards_left }} <br>
+    Position: {{ player.position }}
 
     <div class="row">
         <div class="player-cards">
@@ -22,7 +23,7 @@
 <div class="col-md-5 col-md-push-1">
     <div class=container" id="selected-cards">
         <div class="row">
-            {% if player.game.round_end == False %}
+            {% if player.game.is_round_end == False %}
                 {% if player.turn %}
                     <div class="text-center">
                         <img src="{% static 'images/green-tick.png' %}" width="25px" height="25px">
@@ -46,7 +47,7 @@
                     {% endfor %}
                 </div>
 
-                {% if player.game.card_face == 2 and player.turn and player.game.round_end == False%}
+                {% if player.game.card_face == 2 and player.turn and player.game.is_round_end == False %}
                     <div class="row">
                         <div id="card-face">
                             <form id="card-face-form">
@@ -71,7 +72,7 @@
                         <a class="btn btn-success" role="button" id="submit-ready">Ready</a>
                     </div>
                 {% endif %}
-                {% if player.turn and player.game.round_end == False %}
+                {% if player.turn and player.game.is_round_end == False %}
                     <div class="row">
                         <a class="btn btn-success" role="button" id="submit-action">Submit Action</a>
                     </div>
@@ -82,7 +83,7 @@
 
             {% if player.action.cards.count > 0 %}
             <div class="col-md-5">
-                    {% if player.game.round_end == False %}
+                    {% if player.game.is_round_end == False %}
                         <h5 class="panel-header">Last submitted action:</h5>
                         {% if player.action.face_up %}
                             Played Face Up
